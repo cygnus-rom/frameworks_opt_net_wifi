@@ -332,6 +332,8 @@ public class SoftApManager implements ActiveModeManager {
      * Teardown soft AP and teardown the interface.
      */
     private void stopSoftAp() {
+        Log.d(TAG, "Soft AP deauth_all before stop Soft AP");
+        mWifiNative.setHostapdParams("deauth_all");
         if (mWifiApConfigStore.getDualSapStatus() && !mDualSapIfacesDestroyed) {
             mDualSapIfacesDestroyed = true;
             mWifiNative.teardownInterface(mdualApInterfaces[0]);
@@ -439,10 +441,9 @@ public class SoftApManager implements ActiveModeManager {
                         WifiManager.SAP_START_FAILURE_GENERAL);
                 return false;
             }
-            mDataInterfaceName = mWifiNative.getFstDataInterfaceName();
-            if (TextUtils.isEmpty(mDataInterfaceName)) {
-                mDataInterfaceName = mApInterfaceName;
-            }
+            // TODO FST not supported for SoftAP. When supported,
+            // mDataInterfaceName may be different from mApInterfaceName
+            mDataInterfaceName = mApInterfaceName;
             updateApState(WifiManager.WIFI_AP_STATE_ENABLING,
                     WifiManager.WIFI_AP_STATE_DISABLED, 0);
 
@@ -556,10 +557,9 @@ public class SoftApManager implements ActiveModeManager {
                                     false, WifiManager.SAP_START_FAILURE_GENERAL);
                             break;
                         }
-                        mDataInterfaceName = mWifiNative.getFstDataInterfaceName();
-                        if (TextUtils.isEmpty(mDataInterfaceName)) {
-                            mDataInterfaceName = mApInterfaceName;
-                        }
+                        // TODO FST not supported for SoftAP. When supported,
+                        // mDataInterfaceName may be different from mApInterfaceName
+                        mDataInterfaceName = mApInterfaceName;
                         updateApState(WifiManager.WIFI_AP_STATE_ENABLING,
                                 WifiManager.WIFI_AP_STATE_DISABLED, 0);
                         int result = startSoftAp((WifiConfiguration) message.obj);
